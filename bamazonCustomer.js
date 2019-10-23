@@ -19,6 +19,7 @@ var connection = mysql.createConnection({
 // connect to the mysql server and sql database
 connection.connect(function(err) {
   if (err) throw err;
+  console.log("connection succesful!");
   // run the start function after the connection is made to prompt the user
-  start();
+  // start();
 });

@@ -20,6 +20,25 @@ var connection = mysql.createConnection({
 connection.connect(function(err) {
   if (err) throw err;
   console.log("connection succesful!");
-  // run the start function after the connection is made to prompt the user
-  // start();
+  makeTable();
 });
+
+// create table function to pull data from database and print to screen
+var makeTable = function() {
+  connection.query("SELECT * FROM bamazon_db.products", function(err, res) {
+    for (var i = 0; i < res.length; i++) {
+      console.log(
+        res[i].itemid +
+          " || " +
+          res[i].product_name +
+          " || " +
+          res[i].department_name +
+          " || " +
+          res[i].price +
+          " || " +
+          res[i].stock_quantity +
+          "\n"
+      );
+    }
+  });
+};

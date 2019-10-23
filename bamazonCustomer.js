@@ -40,5 +40,66 @@ var makeTable = function() {
           "\n"
       );
     }
+    promptCustomer(res);
   });
+};
+
+// create inquirer prompt for user input and loop through data
+var promptCustomer = function(res) {
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "choice",
+        message: "What would you like to purchase? [Quit with Q]"
+      }
+    ])
+    .then(function(answer) {
+      var correct = false;
+      if (answer.choice.toUpperCase() == "Q") {
+        process.exit();
+      }
+      for (var i = 0; i < res.length; i++) {
+        correct = true;
+        var product = answer.choice;
+        var id = i;
+        // prompt to ask the user how many items they would like to buy & checking if it is a number
+        inquirer
+          .prompt({
+            type: "input",
+            name: "quant",
+            message: "How many would you like to buy?",
+            validate: function(value) {
+              if (isNaN(value) == false) {
+                return true;
+              } else {
+                return false;
+              }
+            }
+            // number confirmed checking against stock quantities
+          })
+          .then(function(answer) {
+            if (res[id].stock_quantity - answer.quant > 0) {
+              connection.query(
+                "UPDATE products SET stock_quantity='" +
+                  (res[id].stock_quantity - answer.quant) +
+                  "' WHERE product_name= '" +
+                  product +
+                  "'",
+                function(err, res2) {
+                  console.log("Product Bought!");
+                  makeTable();
+                }
+              );
+            } else {
+              console.log("Not a valid selection!");
+              promptCustomer(res);
+            }
+          });
+      }
+      if (i == res.length && correct == false) {
+        console.log("Not a valid selection!");
+        promptCustomer(res);
+      }
+    });
 };
